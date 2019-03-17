@@ -33,7 +33,7 @@ Setpoint item=BenQ_Projector_Volume_Target label="Target volume" minValue=0 maxV
 
 ### Rules
 
-The first rule translates the target volume into the respective number of 'volume up' or 'down' ticks and forwards them to the ESP until the target volume is reached.
+There is now way to set a target volume (e.g. "3"), only one tick up (`vol=+`) or down (`vol=-`) from the current volume. I therefore created an internal target volume item. The first rule translates the target volume into the respective number of 'volume up' or 'down' ticks and forwards them to the ESP until the target volume is reached.
 
 ```
 rule "Change_Projector_Volume"
@@ -52,7 +52,7 @@ then
 end
 ```
 
-The second rule sets the target volume state to the actual volume, but only when the volume is not changed by the above rule. This is to ensure that the target volume state accurately reflects the current volume when its changed manually (buttons on projector or remote).
+The second rule sets the target volume state to the actual volume when the latter is changed with the projector remote (or on-device buttons). This is to avoid a wrong relative volume change based on an incorrect current volume.
 
 ```
 rule "Sync_Projector_Volume"
