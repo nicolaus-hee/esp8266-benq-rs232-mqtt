@@ -1,15 +1,22 @@
 # esp8266-benq-rs232-mqtt
-Control this [BenQ TH530 projector](https://www.benq.eu/de-de/projector/home-entertainment/th530.html) with an ESP8266 and MQTT via its RS232 interface.
-
-## Objective
-
-Integrate my BenQ projector into [openHAB](https://openhab.org) to control it with MQTT using its [officially documented](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf) RS232 interface.
+Objective: Control this [BenQ TH530 projector](https://www.benq.eu/de-de/projector/home-entertainment/th530.html) with an ESP8266 and MQTT via its RS232 interface and [openHAB](http://openhab.org). I follow [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf).
 
 ## What you need
 
-* ESP8266 (I use model E12 on the Wemos D1 Mini Lite breakout board)
+* ESP8266 (I use model E12 on the Wemos D1 Mini breakout board)
 * RS232 to TTL converter with female DB9 connector
 * Basic wires
+
+Connect pins like this:
+
+ESP8266 | RS232-TTL
+------- | ---------
+G | GND
+3V | VCC
+D4 | TXD
+RX | RXD
+
+<img src="https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/esp8266_rs232-ttl.jpg" width="600" />
 
 ## What the code does
 
@@ -20,7 +27,18 @@ Integrate my BenQ projector into [openHAB](https://openhab.org) to control it wi
 * Send custom commands via MQTT message
 * Respond to custom commands via MQTT message
 
-## openHAB integration
+## How to use: MQTT
+
+Topic | Payload | Comment
+----- | ------- | --------
+stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":"4"} | Publishes status every 5 seconds
+cmnd/projector/POWER | ON, OFF | Power on or off
+cmnd/projector/SOURCE | HDMI, SVID, VID, RGB, RGB2 | Set source / input
+cmnd/projector/VOLUME | 0...10 | Set volume
+cmnd/projector/COMMAND | --> | [Any command, e.g. vol=+](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf)
+stat/projector/COMMAND | {"COMMAND":"...","RESPONSE":"..."} | Returns result of above
+
+## How to use: openHAB
 
 ### Channels & items
 
