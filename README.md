@@ -17,50 +17,49 @@ Integrate my BenQ projector into [openHAB](https://openhab.org) to control it wi
 * Send power (on/off), source change, volume change commands to projector
 * Publish status updates to MQTT server
 * Listen for commands from MQTT server, then execute them
+* Send custom commands via MQTT message
+* Respond to custom commands via MQTT message
 
 ## openHAB integration
 
 ### Channels & items
+
+```
+Channel label: Power
+MQTT state topic: stat/projector/STATUS
+MQTT command topic: cmnd/projector/POWER
+Incoming value transformation: JSONPATH:$.POWER
+Item id: BenQ_Projector_Power
+Item type: Switch
+
+Label: Source
+MQTT state topic: stat/projector/STATUS
+MQTT command topic: cmnd/projector/SOURCE
+Incoming value transformation: JSONPATH:$.SOURCE
+Item id: BenQ_Projector_Source
+Item type: String
+
+Label: Volume
+MQTT state topic: stat/projector/STATUS
+MQTT command topic: cmnd/projector/VOLUME
+Incoming value transformation: JSONPATH:$.VOLUME
+Item id: BenQ_Projector_Volume
+Item type: Number
+
+```
+
+When all channels are set up, this is what you should see:
+
+![OpenHAB projector channels](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_projector_channels.JPG)
 
 ### Sitemap
 
 ```
 Switch item=BenQ_Projector_Power label="Projector"
 Switch item=BenQ_Projector_Source label="Source/ input" mappings=[HDMI="HDMI",SVID="SVID",VID="VID",RGB="RGB",RGB2="RGB2"] visibility=[BenQ_Projector_Power==ON]
-Default item=BenQ_Projector_Volume label="Volume" visibility=[BenQ_Projector_Power==ON]
-Setpoint item=BenQ_Projector_Volume_Target label="Target volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
+Setpoint item=BenQ_Projector_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
 ```
 
-### Rules
+This is what that looks like in Paper UI:
 
-There is now way to set a target volume (e.g. "3"), only one tick up (`vol=+`) or down (`vol=-`) from the current volume. I therefore created an internal target volume item. The first rule translates the target volume into the respective number of 'volume up' or 'down' ticks and forwards them to the ESP until the target volume is reached.
-
-```
-rule "Change_Projector_Volume"
-when
-    Item BenQ_Projector_Volume_Target changed
-then
-    while((BenQ_Projector_Volume.state as Number) != (BenQ_Projector_Volume_Target.state as Number)) {
-        if((BenQ_Projector_Volume_Target.state as Number) > (BenQ_Projector_Volume.state as Number)) {
-            BenQ_Projector_Volume_Change.sendCommand("up")
-        } else {
-            BenQ_Projector_Volume_Change.sendCommand("down")
-        }
-        Thread::sleep(5000)
-    }
-    BenQ_Projector_Volume_Change.postUpdate("")
-end
-```
-
-The second rule sets the target volume state to the actual volume when the latter is changed with the projector remote (or on-device buttons). This is to avoid a wrong relative volume change based on an incorrect current volume.
-
-```
-rule "Sync_Projector_Volume"
-when
-    Item BenQ_Projector_Volume changed
-then
-    if (BenQ_Projector_Volume_Change.state == "") {
-        BenQ_Projector_Volume_Target.postUpdate(BenQ_Projector_Volume.state)
-    }
-end
-```
+![OpenHAB sitemap](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_sitemap_projector_on.JPG)
