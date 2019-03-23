@@ -29,9 +29,11 @@ RX | RXD
 
 ## How to use: MQTT
 
+`stat` topics are published by the code, `cmnd` topics are subscribed to and will be acted upon.
+
 Topic | Payload | Comment
 ----- | ------- | --------
-stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":"4"} | Publishes status every 5 seconds
+stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":"4"} | Published every 5 seconds
 cmnd/projector/POWER | ON, OFF | Power on or off
 cmnd/projector/SOURCE | HDMI, SVID, VID, RGB, RGB2 | Set source / input
 cmnd/projector/VOLUME | 0...10 | Set volume
