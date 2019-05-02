@@ -29,7 +29,7 @@ RX | RXD
 
 ## How to use: MQTT
 
-`stat` topics are published by the code, `cmnd` topics are subscribed to and will be acted upon.
+`stat` topics are published by the module, `cmnd` topics are listened to by the module and acted upon.
 
 Topic | Payload | Comment
 ----- | ------- | --------
