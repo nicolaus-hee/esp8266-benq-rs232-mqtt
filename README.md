@@ -80,6 +80,6 @@ Switch item=BenQ_Projector_Source label="Source/ input" mappings=[HDMI="HDMI",SV
 Setpoint item=BenQ_Projector_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
 ```
 
-This is what that looks like in Paper UI:
+This is what that looks like in Basic UI:
 
 ![OpenHAB sitemap](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_sitemap_projector_on.JPG)
