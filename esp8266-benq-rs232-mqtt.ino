@@ -25,6 +25,7 @@ Adafruit_MQTT_Publish benq_any_command_pub = Adafruit_MQTT_Publish(&mqtt, "stat/
 Adafruit_MQTT_Subscribe benq_power_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/POWER");
 Adafruit_MQTT_Subscribe benq_volume_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/VOLUME");
 Adafruit_MQTT_Subscribe benq_source_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/SOURCE");
+Adafruit_MQTT_Subscribe benq_lamp_mode_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/LAMP_MODE");
 Adafruit_MQTT_Subscribe benq_any_command_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/COMMAND");
 
 void MQTT_connect() {
@@ -78,6 +79,8 @@ void setup() {
     } else { // U_SPIFFS
       type = "filesystem";
     }
+
+    // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Serial.println("Start updating " + type);
   });
   ArduinoOTA.onEnd([]() {
@@ -106,6 +109,7 @@ void setup() {
   mqtt.subscribe(&benq_power_sub);
   mqtt.subscribe(&benq_volume_sub);
   mqtt.subscribe(&benq_source_sub);
+  mqtt.subscribe(&benq_lamp_mode_sub);
   mqtt.subscribe(&benq_any_command_sub);
 }
 
@@ -125,6 +129,10 @@ void loop() {
     }
     if (subscription == &benq_source_sub) {
       benq_send_any_command("sour="+String((char *)benq_source_sub.lastread));
+      benq_publish_status();
+    }    
+    if (subscription == &benq_lamp_mode_sub) {
+      benq_send_any_command("lampm="+String((char *)benq_lamp_mode_sub.lastread));
       benq_publish_status();
     }    
     if (subscription == &benq_any_command_sub) {
@@ -187,6 +195,18 @@ int benq_get_volume_status() {
   return (regex(current_volume_status, "VOL=([^#]*)")).toInt();
 }
 
+String benq_get_lamp_mode() {
+  char current_lamp_status[50];
+  serial_send_command("lampm=?").toCharArray(current_lamp_status,50);
+  return regex(current_lamp_status, "LAMPM=([^#]*)");
+}
+
+int benq_get_lamp_hours() {
+  char current_lamp_hours[50];
+  serial_send_command("ltim=?").toCharArray(current_lamp_hours,50);
+  return (regex(current_lamp_hours, "LTIM=([^#]*)")).toInt();
+}
+
 String benq_collect_status() {
   String current_status;
   current_status += "{";
@@ -195,6 +215,10 @@ String benq_collect_status() {
   current_status += "\"SOURCE\":\"" + benq_get_source_status() + "\"";
   current_status += ",";
   current_status += "\"VOLUME\":\"" + String(benq_get_volume_status()) + "\"";  
+  current_status += ",";
+  current_status += "\"LAMP_MODE\":\"" + String(benq_get_lamp_mode()) + "\""; 
+  current_status += ",";
+  current_status += "\"LAMP_HOURS\":\"" + String(benq_get_lamp_hours()) + "\"";   
   current_status += "}";
   return current_status;
 }
