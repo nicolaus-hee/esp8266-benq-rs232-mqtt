@@ -33,10 +33,11 @@ RX | RXD
 
 Topic | Payload | Comment
 ----- | ------- | --------
-stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":"4"} | Published every 5 seconds
+stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":"4", "LAMP_MODE":"ECO","LAMP_HOURS":"105"} | Published every 5 seconds
 cmnd/projector/POWER | ON, OFF | Power on or off
 cmnd/projector/SOURCE | HDMI, SVID, VID, RGB, RGB2 | Set source / input
 cmnd/projector/VOLUME | 0...10 | Set volume
+cmnd/projector/LAMP_MODE | LNOR, ECO, SECO, SECO2 | Set lamp mode
 cmnd/projector/COMMAND | --> | [Any command, e.g. vol=+](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf)
 stat/projector/COMMAND | {"COMMAND":"...","RESPONSE":"..."} | Returns result of above
 
@@ -66,6 +67,19 @@ Incoming value transformation: JSONPATH:$.VOLUME
 Item id: BenQ_Projector_Volume
 Item type: Number
 
+Label: Lamp mode
+MQTT state topic: stat/projector/STATUS
+MQTT command topic: cmnd/projector/LAMP_MODE
+Incoming value transformation: JSONPATH:$.LAMP_MODE
+Item id: BenQ_Projector_Lamp_Mode
+Item type: String
+
+Label: Lamp hours
+MQTT state topic: stat/projector/STATUS
+Incoming value transformation: JSONPATH:$.LAMP_HOURS
+Item id: BenQ_Projector_Lamp_Hours
+Item type: Number
+
 ```
 
 When all channels are set up, this is what you should see:
@@ -77,7 +91,9 @@ When all channels are set up, this is what you should see:
 ```
 Switch item=BenQ_Projector_Power label="Projector"
 Switch item=BenQ_Projector_Source label="Source/ input" mappings=[HDMI="HDMI",SVID="SVID",VID="VID",RGB="RGB",RGB2="RGB2"] visibility=[BenQ_Projector_Power==ON]
+Switch item=BenQ_Projector_Lamp_Mode label="Lamp mode" mappings=[LNOR="Normal",ECO="Eco",SECO="SmartEco",SECO2="LampSaver"] visibility=[BenQ_Projector_Power==ON]
 Setpoint item=BenQ_Projector_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
+Default item=BenQ_Projector_Lamp_Hours label="Lamp hours"
 ```
 
 This is what that looks like in Basic UI:
