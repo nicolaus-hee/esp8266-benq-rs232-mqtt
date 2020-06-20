@@ -93,7 +93,7 @@ Switch item=BenQ_Projector_Power label="Projector"
 Switch item=BenQ_Projector_Source label="Source/ input" mappings=[HDMI="HDMI",SVID="SVID",VID="VID",RGB="RGB",RGB2="RGB2"] visibility=[BenQ_Projector_Power==ON]
 Switch item=BenQ_Projector_Lamp_Mode label="Lamp mode" mappings=[LNOR="Normal",ECO="Eco",SECO="SmartEco",SECO2="LampSaver"] visibility=[BenQ_Projector_Power==ON]
 Setpoint item=BenQ_Projector_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
-Default item=BenQ_Projector_Lamp_Hours label="Lamp hours"
+Default item=BenQ_Projector_Lamp_Hours label="Lamp hours" visibility=[BenQ_Projector_Power==ON]
 ```
 
 This is what that looks like in Basic UI:
