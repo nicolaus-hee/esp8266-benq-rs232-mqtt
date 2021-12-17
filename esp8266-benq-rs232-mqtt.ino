@@ -214,11 +214,11 @@ String benq_collect_status() {
   current_status += ",";
   current_status += "\"SOURCE\":\"" + benq_get_source_status() + "\"";
   current_status += ",";
-  current_status += "\"VOLUME\":\"" + String(benq_get_volume_status()) + "\"";  
+  current_status += "\"VOLUME\":" + String(benq_get_volume_status());  
   current_status += ",";
   current_status += "\"LAMP_MODE\":\"" + String(benq_get_lamp_mode()) + "\""; 
   current_status += ",";
-  current_status += "\"LAMP_HOURS\":\"" + String(benq_get_lamp_hours()) + "\"";   
+  current_status += "\"LAMP_HOURS\":" + String(benq_get_lamp_hours());   
   current_status += "}";
   return current_status;
 }
