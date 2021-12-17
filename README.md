@@ -81,6 +81,12 @@ Incoming value transformation: JSONPATH:$.LAMP_HOURS
 Item id: BenQ_Projector_Lamp_Hours
 Item type: Number
 
+Label: Mute
+MQTT state topic: stat/projector/STATUS
+MQTT command topic: cmnd/projector/MUTE
+Incoming value transformation: JSONPATH:$.MUTE
+Item id: BenQ_Projector_Mute
+Item type: Switch
 ```
 
 When all channels are set up, this is what you should see:
@@ -95,6 +101,7 @@ Switch item=BenQ_Projector_Source label="Source/ input" mappings=[HDMI="HDMI",SV
 Switch item=BenQ_Projector_Lamp_Mode label="Lamp mode" mappings=[LNOR="Normal",ECO="Eco",SECO="SmartEco",SECO2="LampSaver"] visibility=[BenQ_Projector_Power==ON]
 Setpoint item=BenQ_Projector_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
 Default item=BenQ_Projector_Lamp_Hours label="Lamp hours" visibility=[BenQ_Projector_Power==ON]
+Switch item=BenQ_Projector_Mute label="Mute"
 ```
 
 This is what that looks like in Basic UI:
