@@ -21,7 +21,7 @@ RX | RXD
 ## What the code does
 
 * Read power / source / volume status from projector
-* Send power (on/off), source change, volume change commands to projector
+* Send power (on/off), source change, volume change, mute commands to projector
 * Publish status updates to MQTT server
 * Listen for commands from MQTT server, then execute them
 * Send custom commands via MQTT message
@@ -33,10 +33,11 @@ RX | RXD
 
 Topic | Payload | Comment
 ----- | ------- | --------
-stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":"4", "LAMP_MODE":"ECO","LAMP_HOURS":"105"} | Published every 5 seconds
+stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":4, "LAMP_MODE":"ECO","LAMP_HOURS":105,"MUTE":"OFF"} | Published every 5 seconds
 cmnd/projector/POWER | ON, OFF | Power on or off
 cmnd/projector/SOURCE | HDMI, SVID, VID, RGB, RGB2 | Set source / input
 cmnd/projector/VOLUME | 0...10 | Set volume
+cmnd/projector/MUTE | ON, OFF | Enable / disable mute
 cmnd/projector/LAMP_MODE | LNOR, ECO, SECO, SECO2 | Set lamp mode
 cmnd/projector/COMMAND | --> | [Any command, e.g. vol=+](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf)
 stat/projector/COMMAND | {"COMMAND":"...","RESPONSE":"..."} | Returns result of above
