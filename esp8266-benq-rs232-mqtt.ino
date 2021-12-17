@@ -27,6 +27,7 @@ Adafruit_MQTT_Subscribe benq_volume_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/p
 Adafruit_MQTT_Subscribe benq_source_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/SOURCE");
 Adafruit_MQTT_Subscribe benq_lamp_mode_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/LAMP_MODE");
 Adafruit_MQTT_Subscribe benq_any_command_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/COMMAND");
+Adafruit_MQTT_Subscribe benq_mute_sub = Adafruit_MQTT_Subscribe(&mqtt, "cmnd/projector/MUTE");
 
 void MQTT_connect() {
   int8_t ret;
@@ -111,6 +112,7 @@ void setup() {
   mqtt.subscribe(&benq_source_sub);
   mqtt.subscribe(&benq_lamp_mode_sub);
   mqtt.subscribe(&benq_any_command_sub);
+  mqtt.subscribe(&benq_mute_sub);
 }
 
 void loop() {
@@ -139,6 +141,10 @@ void loop() {
       benq_send_any_command((char *)benq_any_command_sub.lastread);
       benq_publish_status();
     }
+    if (subscription == &benq_mute_sub) {
+      benq_send_any_command("mute="+String((char *)benq_mute_sub.lastread));
+      benq_publish_status();
+    }        
   }
   benq_publish_status();
 }
@@ -207,6 +213,12 @@ int benq_get_lamp_hours() {
   return (regex(current_lamp_hours, "LTIM=([^#]*)")).toInt();
 }
 
+String benq_get_mute_status() {
+  char current_mute_status[50];
+  serial_send_command("mute=?").toCharArray(current_mute_status,50);
+  return regex(current_mute_status, "MUTE=([^#]*)");
+}
+
 String benq_collect_status() {
   String current_status;
   current_status += "{";
@@ -218,7 +230,9 @@ String benq_collect_status() {
   current_status += ",";
   current_status += "\"LAMP_MODE\":\"" + String(benq_get_lamp_mode()) + "\""; 
   current_status += ",";
-  current_status += "\"LAMP_HOURS\":" + String(benq_get_lamp_hours());   
+  current_status += "\"LAMP_HOURS\":" + String(benq_get_lamp_hours());  
+  current_status += ",";
+  current_status += "\"MUTE\":\"" + String(benq_get_mute_status()) + "\"";     
   current_status += "}";
   return current_status;
 }
