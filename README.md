@@ -5,7 +5,7 @@ Objective: Control this [BenQ TH530 projector](https://www.benq.eu/de-de/project
 
 * ESP8266 (I use model E12 on the Wemos D1 Mini breakout board)
 * RS232 to TTL converter with female DB9 connector
-* Basic wires
+* Basic Dupont wires
 
 Connect pins like this:
 
