@@ -16,51 +16,29 @@ Objective: Control this [BenQ TH530 projector](https://www.benq.eu/de-de/project
 :point_right: Send custom commands via MQTT  
 :speech_balloon: Respond to custom commands via MQTT  
 
-## Required hardware
+## Installation
+
+### :one: Required hardware
 
 * ESP8266 (I used a Wemos D1 Mini)
 * RS232 to TTL converter with female DB9
-* Basic Dupont wires
 
-Connect the pins like this:
+### :two: ESP8266 and RS232 to TTL converter
 
-ESP8266 | RS232-TTL
-------- | ---------
-G | GND
-5V | VCC
-D4 | TXD
-RX | RXD
-
-## MQTT implementation
-
-`stat` topics are published by the module for status messages, `cmnd` topics are commands to the module.
-
-Topic | Payload | Comment
------ | ------- | --------
-stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":4, "LAMP_MODE":"ECO","LAMP_HOURS":105,"MUTE":"OFF"} | Published every 5 seconds
-cmnd/projector/POWER | ON, OFF | Power on or off
-cmnd/projector/SOURCE | HDMI, SVID, VID, RGB, RGB2 | Set source / input
-cmnd/projector/VOLUME | 0...10 | Set volume
-cmnd/projector/MUTE | ON, OFF | Mute / unmute
-cmnd/projector/LAMP_MODE | LNOR, ECO, SECO, SECO2 | Set lamp mode
-cmnd/projector/COMMAND | --> | [Any command, e.g. vol=+](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf)
-stat/projector/COMMAND | {"COMMAND":"...","RESPONSE":"..."} | Returns result of above
-
-See [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf) for further custom commands.
-
-## Installation
-
-### ESP8266 and RS232 to TTL converter
-
-1. Wire ESP8266 and RS232 to TTL converter.
+1. Wire ESP8266 and RS232 to TTL converter.  
+(ESP → TTL)  
+G → GND  
+5V → VCC  
+D4 → TXD  
+RX → RXD
 2. Add your MQTT broker & WiFI credentials to the `esp8266-benq-rs232-mqtt.ino` sketch, then flash it to your board.
 3. Plug the DB9 connector to the `RS232` port of the projector.
 
-:white_check_mark: *Your projector will now publish MQTT status messages and listen for commands.*
+:white_check_mark: *Your ESP will now publish projector status MQTT messages and listen for commands.*
 
-### openHAB (optional)
+### :three: openHAB (optional)
 
-1. Make sure you have the [JsonPath transformation service](https://www.openhab.org/addons/transformations/jsonpath/) and a MQTT broker installed.
+1. Make sure you have the [JsonPath](https://www.openhab.org/addons/transformations/jsonpath/) transformation service, [MQTT binding](https://www.openhab.org/addons/bindings/mqtt/) and a MQTT broker installed.
 2. Create a new Generic MQTT thing, choose `34c510f090:20807f1aae` as the identifier.
 3. Edit the new thing, paste the contents of `benq_thing.yaml` in the 'Code' tab and save.
 4. Place `benq.items` in your `openhab-conf/items` folder (e.g. `/etc/openhab/items`)
@@ -72,12 +50,12 @@ See [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-
 
 ![OpenHAB sitemap](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_sitemap.png)
 
-### Google Assistant via openHAB (optional)
+### :four: Google Assistant via openHAB (optional)
 
 1. Complete the openHAB steps above.
-2. Connect your openHAB instance to the [openHAB cloud connector](https://www.openhab.org/addons/integrations/openhabcloud/).
-3. Expose the newly created projector items to the openHAB cloud connector.
-4. Ask Google Assistant to "Talk to openHAB" to link your openHAB cloud account to your Assistant.
+2. Connect your openHAB instance to the [openHAB Cloud connector](https://www.openhab.org/addons/integrations/openhabcloud/).
+3. Expose the newly created projector items to the openHAB Cloud  (Settings → openHAB Cloud → Items to Expose).
+4. Ask Google Assistant to "Talk to openHAB" to link your openHAB Cloud account to your Assistant.
 
 :white_check_mark: *A `TV` device will appear in your Google Home app and you can now control the projector via the app or with voice commands such as "mute my TV".*
 
@@ -86,3 +64,18 @@ See [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-
 ![Google Home app, device view](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/ga_device.png)
 
 ![Google Home app, assistant dialogue](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/ga_dialogue.png)
+
+## MQTT implementation
+
+`stat` topics are published by the module and contain status messages. `cmnd` topics are used to execute commands on the projector.
+
+Topic | Payload | Comment
+----- | ------- | --------
+`stat/projector/STATUS` | `{"POWER":"ON","SOURCE":"HDMI","VOLUME":4, "LAMP_MODE":"ECO","LAMP_HOURS":105,"MUTE":"OFF"}` | Every 5 seconds
+`cmnd/projector/POWER` | `ON`, `OFF` | Power on / off
+`cmnd/projector/SOURCE` | `HDMI`, `SVID`, `VID`, `RGB`, `RGB2` | Set source
+`cmnd/projector/VOLUME` | `0`...`10` | Set volume
+`cmnd/projector/MUTE` | `ON`, `OFF` | (Un)mute
+`cmnd/projector/LAMP_MODE` | `LNOR`, `ECO`, `SECO`, `SECO2` | Set lamp mode
+`cmnd/projector/COMMAND` | See [BenQ docu](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf), e.g. `VOL=?` | 
+`stat/projector/COMMAND` | `{"COMMAND":"...","RESPONSE":"..."}` | Returns result of above
