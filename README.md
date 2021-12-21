@@ -1,35 +1,39 @@
 # esp8266-benq-rs232-mqtt
-Objective: Control this [BenQ TH530 projector](https://www.benq.eu/de-de/projector/home-entertainment/th530.html) with an ESP8266 and MQTT via its RS232 interface and [openHAB](http://openhab.org). I follow [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf).
+Objective: Control this [BenQ TH530 projector](https://www.benq.eu/de-de/projector/home-entertainment/th530.html) via [its RS232 interface](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf) with an [ESP8266](https://en.wikipedia.org/wiki/ESP8266), [MQTT](https://mqtt.org) and [openHAB](http://openhab.org).
 
-## What you need
+<img src="https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/esp8266_rs232-ttl.jpg" width="600" />
 
-* ESP8266 (I use model E12 on the Wemos D1 Mini breakout board)
-* RS232 to TTL converter with female DB9 connector
+## Features
+
+* Read power / source / volume status
+* Read lamp mode & hours
+* Trigger power (on/off) commands
+* Trigger source changes (HDMI etc.)
+* Change volume or mute
+* Change lamp mode
+* Publish status updates via MQTT
+* Listen for MQTT commands
+* Send custom commands via MQTT
+* Respond to custom commands via MQTT
+
+## Required hardware
+
+* ESP8266 (I used a Wemos D1 Mini)
+* RS232 to TTL converter with female DB9
 * Basic Dupont wires
 
-Connect pins like this:
+Connect the pins like this:
 
 ESP8266 | RS232-TTL
 ------- | ---------
 G | GND
-3V | VCC
+5V | VCC
 D4 | TXD
 RX | RXD
 
-<img src="https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/esp8266_rs232-ttl.jpg" width="600" />
+## MQTT implementation
 
-## What the code does
-
-* Read power / source / volume status from projector
-* Send power (on/off), source change, volume change, mute commands to projector
-* Publish status updates to MQTT server
-* Listen for commands from MQTT server, then execute them
-* Send custom commands via MQTT message
-* Respond to custom commands via MQTT message
-
-## How to use: MQTT
-
-`stat` topics are published by the module, `cmnd` topics are listened to by the module and acted upon.
+`stat` topics are published by the module for status messages, `cmnd` topics are commands to the module.
 
 Topic | Payload | Comment
 ----- | ------- | --------
@@ -37,73 +41,48 @@ stat/projector/STATUS | {"POWER":"ON","SOURCE":"HDMI","VOLUME":4, "LAMP_MODE":"E
 cmnd/projector/POWER | ON, OFF | Power on or off
 cmnd/projector/SOURCE | HDMI, SVID, VID, RGB, RGB2 | Set source / input
 cmnd/projector/VOLUME | 0...10 | Set volume
-cmnd/projector/MUTE | ON, OFF | Enable / disable mute
+cmnd/projector/MUTE | ON, OFF | Mute / unmute
 cmnd/projector/LAMP_MODE | LNOR, ECO, SECO, SECO2 | Set lamp mode
 cmnd/projector/COMMAND | --> | [Any command, e.g. vol=+](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf)
 stat/projector/COMMAND | {"COMMAND":"...","RESPONSE":"..."} | Returns result of above
 
-## How to use: openHAB
+See [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-us-file/RS232-commands_all%20Product%20Lines.pdf) for further custom commands.
 
-### Channels & items
+## Installation
 
-```
-Channel label: Power
-MQTT state topic: stat/projector/STATUS
-MQTT command topic: cmnd/projector/POWER
-Incoming value transformation: JSONPATH:$.POWER
-Item id: BenQ_Projector_Power
-Item type: Switch
+### ESP8266 and RS232 to TTL converter
 
-Label: Source
-MQTT state topic: stat/projector/STATUS
-MQTT command topic: cmnd/projector/SOURCE
-Incoming value transformation: JSONPATH:$.SOURCE
-Item id: BenQ_Projector_Source
-Item type: String
+1. Wire ESP8266 and RS232 to TTL converter.
+2. Add your MQTT broker & WiFI credentials to the `esp8266-benq-rs232-mqtt.ino` sketch, then flash it to your board.
+3. Plug the DB9 connector to the `RS232` port of the projector
 
-Label: Volume
-MQTT state topic: stat/projector/STATUS
-MQTT command topic: cmnd/projector/VOLUME
-Incoming value transformation: JSONPATH:$.VOLUME
-Item id: BenQ_Projector_Volume
-Item type: Number
+:white_check_mark: *Your projector will now publish MQTT status messages and listen for commands.*
 
-Label: Lamp mode
-MQTT state topic: stat/projector/STATUS
-MQTT command topic: cmnd/projector/LAMP_MODE
-Incoming value transformation: JSONPATH:$.LAMP_MODE
-Item id: BenQ_Projector_Lamp_Mode
-Item type: String
+### openHAB (optional)
 
-Label: Lamp hours
-MQTT state topic: stat/projector/STATUS
-Incoming value transformation: JSONPATH:$.LAMP_HOURS
-Item id: BenQ_Projector_Lamp_Hours
-Item type: Number
+1. Make sure you have the [JsonPath transformation service](https://www.openhab.org/addons/transformations/jsonpath/) and a MQTT broker installed.
+2. Create a new Generic MQTT thing, choose `34c510f090:20807f1aae` as the identifier.
+3. Edit the new thing, paste the contents of `benq_thing.yaml` in the 'Code' tab and save.
+4. Place `benq.items` in your `openhab-conf/items` folder (e.g. `/etc/openhab/items`)
+5. Place `benq.sitemap` in your `openhab-conf/sitemaps` folder or paste the contents to your existing sitemap.
 
-Label: Mute
-MQTT state topic: stat/projector/STATUS
-MQTT command topic: cmnd/projector/MUTE
-Incoming value transformation: JSONPATH:$.MUTE
-Item id: BenQ_Projector_Mute
-Item type: Switch
-```
+:white_check_mark: *You can now control the projector using the openHAB GUI.*
 
-When all channels are set up, this is what you should see:
+![OpenHAB projector channels](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_channels.png)
 
-![OpenHAB projector channels](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_projector_channels.JPG)
+![OpenHAB sitemap](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_sitemap.png)
 
-### Sitemap
+### Google Assistant via openHAB (optional)
 
-```
-Switch item=BenQ_Projector_Power label="Projector"
-Switch item=BenQ_Projector_Source label="Source/ input" mappings=[HDMI="HDMI",SVID="SVID",VID="VID",RGB="RGB",RGB2="RGB2"] visibility=[BenQ_Projector_Power==ON]
-Switch item=BenQ_Projector_Lamp_Mode label="Lamp mode" mappings=[LNOR="Normal",ECO="Eco",SECO="SmartEco",SECO2="LampSaver"] visibility=[BenQ_Projector_Power==ON]
-Setpoint item=BenQ_Projector_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Projector_Power==ON]
-Default item=BenQ_Projector_Lamp_Hours label="Lamp hours" visibility=[BenQ_Projector_Power==ON]
-Switch item=BenQ_Projector_Mute label="Mute"
-```
+1. Follow the openHAB steps above
+2. Connect your openHAB instance to the openHAB cloud connector.
+3. Expose the newly created projector items to the openHAB cloud connector.
+4. Ask Google Assistant to "Talk to openHAB" to link your openHAB cloud account to your Assistant.
 
-This is what that looks like in Basic UI:
+:white_check_mark: *A `TV` device will appear in your Google Home app and you can now control the projector via the app or with voice commands such as "mute my TV".*
 
-![OpenHAB sitemap](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/openhab_sitemap_projector_on.JPG)
+![Google Home app, room view](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/ga_room.png)
+
+![Google Home app, device view](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/ga_device.png)
+
+![Google Home app, assistant dialogue](https://github.com/nicolaus-hee/esp8266-benq-rs232-mqtt/blob/master/images/ga_dialogue.png)
