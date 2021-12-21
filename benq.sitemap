@@ -1,0 +1,6 @@
+Default item=BenQ_Power label="Projector"
+Default item=BenQ_Source label="Source/ input" mappings=[HDMI="HDMI",SVID="SVID",VID="VID",RGB="RGB",RGB2="RGB2"] visibility=[BenQ_Power==ON]
+Setpoint item=BenQ_Volume label="Volume" minValue=0 maxValue=10 step=1 visibility=[BenQ_Power==ON]
+Default item=BenQ_Mute label="Mute" visibility=[BenQ_Power==ON]
+Default item=BenQ_Lamp_Mode label="Lamp mode" mappings=[LNOR="Normal",ECO="Eco",SECO="SmartEco",SECO2="LampSaver"] visibility=[BenQ_Power==ON]
+Default item=BenQ_Lamp_Hours label="Lamp hours" visibility=[BenQ_Power==ON]

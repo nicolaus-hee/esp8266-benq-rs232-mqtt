@@ -1,0 +1,11 @@
+// Google Assistant items
+Group   BenQ_Group      "TV"            <projector>                         { ga="TV" [ volumeDefaultPercentage="2", levelStepSize="1", volumeMaxLevel="10", availableInputs="HDMI=HDMI,SVID=SVID,VID=VID,RGB=RGB,RGB2=RGB2"] }
+
+Switch  BenQ_Power      "Power"         <switch>            (BenQ_Group)    { ga="tvPower", channel="mqtt:topic:34c510f090:20807f1aae:BenQ_Power" }
+Switch  BenQ_Mute       "Mute"          <soundvolume_mute>  (BenQ_Group)    { ga="tvMute", channel="mqtt:topic:34c510f090:20807f1aae:BenQ_Mute" }
+Number  BenQ_Volume     "Volume"        <soundvolume>       (BenQ_Group)    { ga="tvVolume", channel="mqtt:topic:34c510f090:20807f1aae:BenQ_Volume" }
+String  BenQ_Input      "Input"         <flowpipe>          (BenQ_Group)    { ga="tvInput", channel="mqtt:topic:34c510f090:20807f1aae:BenQ_Source" }
+
+// Other items
+String  BenQ_Lamp_Mode  "Lamp mode"     <lightbulb>                         { channel="mqtt:topic:34c510f090:20807f1aae:BenQ_LampMode" }
+Number  BenQ_Lamp_Hours "Lamp hours"    <time>                              { channel="mqtt:topic:34c510f090:20807f1aae:BenQ_LampHours" }

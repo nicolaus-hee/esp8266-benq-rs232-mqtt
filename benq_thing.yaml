@@ -1,0 +1,58 @@
+UID: mqtt:topic:34c510f090:20807f1aae
+label: BenQ TH530 Projector
+thingTypeUID: mqtt:topic
+configuration: {}
+bridgeUID: <UID of your mqtt broker, e.g. mqtt:broker:34c510f090>
+channels:
+  - id: BenQ_Power
+    channelTypeUID: mqtt:switch
+    label: Power
+    description: ""
+    configuration:
+      commandTopic: cmnd/projector/POWER
+      stateTopic: stat/projector/STATUS
+      transformationPattern: JSONPATH:$.POWER
+  - id: BenQ_Source
+    channelTypeUID: mqtt:string
+    label: Source
+    description: ""
+    configuration:
+      commandTopic: cmnd/projector/SOURCE
+      allowedStates: HDMI,SVID,VID,RGB,RGB2,UNKNOWN
+      stateTopic: stat/projector/STATUS
+      transformationPattern: JSONPATH:$.SOURCE
+  - id: BenQ_Volume
+    channelTypeUID: mqtt:number
+    label: Volume
+    description: ""
+    configuration:
+      commandTopic: cmnd/projector/VOLUME
+      min: 0
+      stateTopic: stat/projector/STATUS
+      transformationPattern: JSONPATH:$.VOLUME
+      max: 10
+  - id: BenQ_LampMode
+    channelTypeUID: mqtt:string
+    label: Lamp Mode
+    description: ""
+    configuration:
+      commandTopic: cmnd/projector/LAMP_MODE
+      allowedStates: LNOR,ECO,SECO,SECO2
+      stateTopic: stat/projector/LAMP_MODE
+      transformationPattern: JSONPATH:$.LAMP_MODE
+  - id: BenQ_Mute
+    channelTypeUID: mqtt:switch
+    label: Mute
+    description: ""
+    configuration:
+      commandTopic: cmnd/projector/MUTE
+      stateTopic: stat/projector/STATUS
+      transformationPattern: JSONPATH:$.MUTE
+      off: UNKNOWN
+  - id: BenQ_LampHours
+    channelTypeUID: mqtt:number
+    label: Lamp Hours
+    description: ""
+    configuration:
+      stateTopic: stat/projector/STATUS
+      transformationPattern: JSONPATH:$.LAMP_HOURS
