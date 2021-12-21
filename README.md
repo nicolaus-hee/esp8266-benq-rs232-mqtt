@@ -5,16 +5,16 @@ Objective: Control this [BenQ TH530 projector](https://www.benq.eu/de-de/project
 
 ## Features
 
-* Read power / source / volume status
-* Read lamp mode & hours
-* Trigger power (on/off) commands
-* Trigger source changes (HDMI etc.)
-* Change volume or mute
-* Change lamp mode
-* Publish status updates via MQTT
-* Listen for MQTT commands
-* Send custom commands via MQTT
-* Respond to custom commands via MQTT
+:information_source: Read power / source / volume status  
+:bulb: Read lamp mode & hours  
+:zap: Trigger power (on/off) commands  
+:tv: Trigger source changes (HDMI etc.)  
+:mute: Change volume or mute  
+:leaves: Change lamp mode  
+:mega: Publish status updates via MQTT  
+:ear: Listen for MQTT commands  
+:point_right: Send custom commands via MQTT  
+:speech_balloon: Respond to custom commands via MQTT  
 
 ## Required hardware
 
@@ -54,7 +54,7 @@ See [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-
 
 1. Wire ESP8266 and RS232 to TTL converter.
 2. Add your MQTT broker & WiFI credentials to the `esp8266-benq-rs232-mqtt.ino` sketch, then flash it to your board.
-3. Plug the DB9 connector to the `RS232` port of the projector
+3. Plug the DB9 connector to the `RS232` port of the projector.
 
 :white_check_mark: *Your projector will now publish MQTT status messages and listen for commands.*
 
@@ -74,8 +74,8 @@ See [BenQ's RS232 documentation](https://benqimage.blob.core.windows.net/driver-
 
 ### Google Assistant via openHAB (optional)
 
-1. Follow the openHAB steps above
-2. Connect your openHAB instance to the openHAB cloud connector.
+1. Complete the openHAB steps above.
+2. Connect your openHAB instance to the [openHAB cloud connector](https://www.openhab.org/addons/integrations/openhabcloud/).
 3. Expose the newly created projector items to the openHAB cloud connector.
 4. Ask Google Assistant to "Talk to openHAB" to link your openHAB cloud account to your Assistant.
 
