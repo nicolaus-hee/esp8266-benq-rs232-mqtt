@@ -154,7 +154,7 @@ String serial_send_command(String serial_command) {
   Serial1.print(serial_command);
   Serial1.print(serial_command_append);
   
-  String serial_response = Serial.readString();
+  String serial_response = Serial1.readString();
   return serial_response;
 }
 
