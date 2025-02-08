@@ -63,6 +63,7 @@ void setup() {
   Serial.print(WLAN_SSID);
   WiFi.hostname("benq-controller");
   wifi_station_set_hostname("benq-controller");
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WLAN_SSID, WLAN_PASS);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
