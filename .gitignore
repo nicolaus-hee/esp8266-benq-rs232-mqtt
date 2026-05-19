@@ -1,0 +1,21 @@
+# Existing Arduino/ESP8266 artifacts
+*.o
+*.d
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# OS
+.DS_Store
+Thumbs.db
